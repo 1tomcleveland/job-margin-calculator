@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#1B2A4A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Job Calculator">
+  <meta name="format-detection" content="telephone=no">
+  <title>Job Margin Calculator</title>
+  <style>
+    :root {
+      --navy: #1B2A4A;
+      --navy-deep: #121C33;
+      --pink: #ED0180;
+      --ink: #231F20;
+      --muted: #5C6270;
+      --line: #D9DCE3;
+      --bg: #F3F4F8;
+      --card: #FFFFFF;
+      --below: #C62828;
+      --below-bg: #FDECEC;
+      --good: #9A6B00;
+      --good-bg: #FFF4D4;
+      --great: #1B7A3A;
+      --great-bg: #E5F6EB;
+      --excellent: #ED0180;
+      --excellent-bg: #FDE8F2;
+      --shadow: 0 8px 24px rgba(27, 42, 74, 0.08);
+      --radius: 16px;
+      --tap: 52px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 17px;
+      line-height: 1.4;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      min-height: 100dvh;
+      padding-bottom: max(28px, env(safe-area-inset-bottom));
+    }
+
+    .header {
+      background: linear-gradient(180deg, var(--navy-deep) 0%, var(--navy) 100%);
+      color: #fff;
+      padding: calc(18px + env(safe-area-inset-top)) 20px 22px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .checker {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 96px;
+      height: 96px;
+      background-image:
+        linear-gradient(45deg, var(--pink) 25%, transparent 25%),
+        linear-gradient(-45deg, var(--pink) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, var(--pink) 75%),
+        linear-gradient(-45deg, transparent 75%, var(--pink) 75%);
+      background-size: 24px 24px;
+      background-position: 0 0, 0 12px, 12px -12px, -12px 0;
+      opacity: 0.95;
+      border-bottom-left-radius: 8px;
+    }
+
+    .brand {
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      font-size: 15px;
+      margin: 0 0 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand span { color: var(--pink); }
+
+    h1 {
+      font-size: 26px;
+      line-height: 1.15;
+      margin: 0 80px 0 0;
+      font-weight: 750;
+      letter-spacing: -0.03em;
+      position: relative;
+      z-index: 1;
+    }
+
+    main {
+      padding: 16px;
+      max-width: 430px;
+      margin: 0 auto;
+      display: grid;
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px 16px 16px;
+      border: 1px solid rgba(27, 42, 74, 0.04);
+    }
+
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--navy);
+      font-weight: 800;
+    }
+
+    .goal-box {
+      background: #F7F8FB;
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin: 0 0 14px;
+      border: 1px solid var(--line);
+    }
+
+    .goal-box p {
+      margin: 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px 16px;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--navy);
+    }
+
+    .goal-box .tier-good { color: var(--good); }
+    .goal-box .tier-great { color: var(--great); }
+    .goal-box .tier-excellent { color: var(--excellent); }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 650;
+      color: var(--navy);
+      margin: 0 0 6px;
+    }
+
+    .hint {
+      font-weight: 500;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .field { margin-bottom: 14px; }
+
+    .field:last-of-type { margin-bottom: 0; }
+
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .prefix {
+      position: absolute;
+      left: 14px;
+      color: var(--muted);
+      font-weight: 700;
+      pointer-events: none;
+    }
+
+    input[type="text"], input[type="number"], input[type="date"] {
+      width: 100%;
+      height: var(--tap);
+      border: 1.5px solid var(--line);
+      border-radius: 12px;
+      padding: 0 14px 0 30px;
+      font-size: 18px;
+      font-weight: 650;
+      color: var(--ink);
+      background: #FAFBFD;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    input.plain { padding-left: 14px; }
+
+    input[type="date"] {
+      padding-left: 14px;
+      padding-right: 12px;
+    }
+
+    input:focus {
+      border-color: var(--pink);
+      box-shadow: 0 0 0 3px rgba(237, 1, 128, 0.18);
+      background: #fff;
+    }
+
+    .labor-out {
+      margin: 6px 0 0;
+      font-size: 14px;
+      font-weight: 750;
+      color: var(--navy);
+    }
+
+    .pills {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .pill {
+      min-height: var(--tap);
+      border-radius: 12px;
+      border: 1.5px solid var(--line);
+      background: #fff;
+      color: var(--navy);
+      font-weight: 750;
+      font-size: 14px;
+      line-height: 1.2;
+      padding: 6px 6px;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .pill small {
+      display: block;
+      font-weight: 600;
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .pill[aria-pressed="true"] {
+      background: var(--navy);
+      border-color: var(--navy);
+      color: #fff;
+    }
+
+    .pill[aria-pressed="true"] small { color: rgba(255,255,255,0.75); }
+
+    .stepper {
+      display: grid;
+      grid-template-columns: var(--tap) 1fr var(--tap);
+      gap: 8px;
+      align-items: center;
+    }
+
+    .stepper button {
+      height: var(--tap);
+      border-radius: 12px;
+      border: 1.5px solid var(--line);
+      background: #fff;
+      color: var(--navy);
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .stepper button:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+
+    .stepper-value {
+      height: var(--tap);
+      border-radius: 12px;
+      border: 1.5px solid var(--line);
+      background: #FAFBFD;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 750;
+      color: var(--navy);
+    }
+
+    .result {
+      margin-top: 16px;
+      border-radius: 14px;
+      padding: 16px 14px 14px;
+      text-align: center;
+      border: 1.5px solid transparent;
+    }
+
+    .result.empty {
+      background: #F7F8FB;
+      color: var(--muted);
+      padding: 22px 14px;
+      font-weight: 600;
+    }
+
+    .result.below { background: var(--below-bg); border-color: #f3c0c0; color: var(--below); }
+    .result.good { background: var(--good-bg); border-color: #f0d48a; color: var(--good); }
+    .result.great { background: var(--great-bg); border-color: #b7e0c4; color: var(--great); }
+    .result.excellent { background: var(--excellent-bg); border-color: #F5A3CC; color: var(--excellent); }
+
+    .gm-pct {
+      font-size: 64px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin: 2px 0 8px;
+    }
+
+    .rating {
+      display: inline-block;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.7);
+      margin-bottom: 10px;
+    }
+
+    .gm-dollars {
+      font-size: 20px;
+      font-weight: 750;
+      margin: 0;
+    }
+
+    .formula {
+      margin: 8px 0 0;
+      font-size: 12px;
+      font-weight: 550;
+      opacity: 0.8;
+    }
+
+    .metrics {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .metric {
+      background: #fff;
+      border-radius: 12px;
+      padding: 12px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+
+    .metric .k {
+      font-size: 13px;
+      font-weight: 650;
+      color: var(--muted);
+      text-align: left;
+    }
+
+    .metric .v {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--navy);
+      text-align: right;
+    }
+
+    .metric .v.neg { color: var(--below); }
+    .metric .v.pos { color: var(--great); }
+
+    .metric .k span {
+      display: block;
+      font-weight: 500;
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .breakdown {
+      margin-top: 4px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      color: var(--ink);
+      text-align: left;
+    }
+
+    .breakdown h3 {
+      margin: 0;
+      padding: 10px 12px 8px;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .breakdown .row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 12px;
+      font-size: 15px;
+      border-top: 1px solid #EEF0F4;
+    }
+
+    .breakdown .row strong { font-weight: 800; color: var(--navy); }
+    .breakdown .row strong.neg { color: var(--below); }
+    .breakdown .row.total {
+      background: #F7F8FB;
+      font-weight: 700;
+    }
+
+    .target-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .stat {
+      background: #F7F8FB;
+      border-radius: 12px;
+      padding: 12px;
+      border: 1px solid var(--line);
+    }
+
+    .stat .v {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--navy);
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+    }
+
+    .stat .k {
+      margin-top: 4px;
+      font-size: 12.5px;
+      font-weight: 650;
+      color: var(--muted);
+    }
+
+    .stat.wide { grid-column: 1 / -1; }
+
+    .progress {
+      margin-top: 12px;
+    }
+
+    .progress-top {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 6px;
+    }
+
+    .bar {
+      height: 14px;
+      background: #E6E8EE;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar > span {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--navy), var(--pink));
+      border-radius: inherit;
+      transition: width 0.2s ease;
+    }
+
+    .bar.hit > span { background: var(--great); }
+
+    .note {
+      margin: 10px 0 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    footer {
+      max-width: 430px;
+      margin: 0 auto;
+      padding: 4px 20px 8px;
+      text-align: center;
+      color: var(--navy);
+    }
+
+    footer p {
+      margin: 0 0 8px;
+      font-size: 14px;
+      font-weight: 750;
+      line-height: 1.45;
+    }
+
+    footer .quiet {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    .hidden { display: none !important; }
+
+    @media (min-width: 500px) {
+      main { padding: 20px 16px 24px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="checker" aria-hidden="true"></div>
+    <p class="brand">1<span>-</span>TOM<span>-</span>PLUMBER</p>
+    <h1>Job Margin Calculator</h1>
+  </header>
+
+  <main>
+    <section class="card">
+      <div class="goal-box">
+        <p>
+          <span class="tier-good">Good 60%</span>
+          <span class="tier-great">Great 70%</span>
+          <span class="tier-excellent">Excellent 80%</span>
+        </p>
+      </div>
+
+      <div class="field">
+        <label for="price">Job price</label>
+        <div class="input-wrap">
+          <span class="prefix">$</span>
+          <input id="price" name="price" type="text" inputmode="decimal" enterkeyhint="done" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="0.00">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="parts">Parts cost</label>
+        <div class="input-wrap">
+          <span class="prefix">$</span>
+          <input id="parts" name="parts" type="text" inputmode="decimal" enterkeyhint="done" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="0.00">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="hours">Total hours</label>
+        <div class="input-wrap">
+          <input id="hours" class="plain" name="hours" type="text" inputmode="decimal" enterkeyhint="done" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="0">
+        </div>
+        <p class="note">2027 Burden Rate: $62.00</p>
+        <p class="labor-out" id="techLaborOut">Labor: $0.00</p>
+      </div>
+
+      <div class="field">
+        <label for="helperHours">Helper hours</label>
+        <div class="input-wrap">
+          <input id="helperHours" class="plain" name="helperHours" type="text" inputmode="decimal" enterkeyhint="done" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="0">
+        </div>
+        <p class="note">Helper rate: $35.00 (placeholder)</p>
+        <p class="labor-out" id="helperLaborOut">Helper labor: $0.00</p>
+      </div>
+
+      <div id="job-result" class="result empty" aria-live="polite">Enter a job price to see gross margin.</div>
+    </section>
+
+    <section class="card" aria-labelledby="target-title">
+      <h2 id="target-title">Hit your monthly target</h2>
+
+      <div class="pills" role="group" aria-label="Monthly revenue target">
+        <button type="button" class="pill" id="t45" data-target="45000" aria-pressed="true">$45,000</button>
+        <button type="button" class="pill" id="t55" data-target="55000" aria-pressed="false">$55,000</button>
+        <button type="button" class="pill" id="tcustom" data-target="custom" aria-pressed="false">Custom<small>Your number</small></button>
+      </div>
+
+      <div class="field hidden" id="custom-wrap">
+        <label for="customTarget">Custom monthly target</label>
+        <div class="input-wrap">
+          <span class="prefix">$</span>
+          <input id="customTarget" name="customTarget" type="text" inputmode="decimal" enterkeyhint="done" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="0.00">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="revenue">Revenue so far this month</label>
+        <div class="input-wrap">
+          <span class="prefix">$</span>
+          <input id="revenue" name="revenue" type="text" inputmode="decimal" enterkeyhint="done" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="0.00">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="todayDate">Today's date</label>
+        <div class="input-wrap">
+          <input id="todayDate" class="plain" name="todayDate" type="date" enterkeyhint="done" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="field">
+        <label id="oncall-label">On-call weekend scheduled</label>
+        <div class="stepper" role="group" aria-labelledby="oncall-label">
+          <button type="button" id="oncallMinus" aria-label="Fewer on-call weekends">-</button>
+          <div class="stepper-value" id="oncallValue" aria-live="polite">0</div>
+          <button type="button" id="oncallPlus" aria-label="More on-call weekends">+</button>
+        </div>
+        <p class="note">Each on-call weekend adds 2 working days. You can add 0, 1, or 2 weekends.</p>
+      </div>
+
+      <div class="field">
+        <label for="daysLeft">Working days left</label>
+        <div class="input-wrap">
+          <input id="daysLeft" class="plain" name="daysLeft" type="text" inputmode="decimal" enterkeyhint="done" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="0">
+        </div>
+        <p class="note" id="daysHint"></p>
+      </div>
+
+      <div class="field">
+        <label for="avgJob">Your average job <span class="hint">(default $850)</span></label>
+        <div class="input-wrap">
+          <span class="prefix">$</span>
+          <input id="avgJob" name="avgJob" type="text" inputmode="decimal" enterkeyhint="done" autocomplete="off" autocorrect="off" spellcheck="false" value="850">
+        </div>
+      </div>
+
+      <div id="target-result" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p class="quiet">This tool stays on your phone. Nothing is stored or sent anywhere.</p>
+  </footer>
+
+  <script>
+    (function () {
+      var GOOD = 0.60;
+      var GREAT = 0.70;
+      var EXCELLENT = 0.80;
+      var TECH_RATE = 62;
+      var HELPER_RATE = 35;
+
+      // Company holidays skipped in the business-day count.
+      // kind "fixed" uses month/day and, when observe is true, moves a
+      // weekend date to the observed weekday (Friday if Saturday, Monday if Sunday).
+      // kind "first-weekday" / "last-weekday" / "nth-weekday" use weekday 0=Sun..6=Sat.
+      // offset shifts that date by a number of days (used for the day after Thanksgiving).
+      var COMPANY_HOLIDAYS = [
+        { name: "New Year's Day", kind: "fixed", month: 1, day: 1, observe: true },
+        { name: "Memorial Day", kind: "last-weekday", month: 5, weekday: 1 },
+        { name: "Independence Day", kind: "fixed", month: 7, day: 4, observe: true },
+        { name: "Labor Day", kind: "first-weekday", month: 9, weekday: 1 },
+        { name: "Thanksgiving", kind: "nth-weekday", month: 11, weekday: 4, nth: 4 },
+        { name: "Day after Thanksgiving", kind: "nth-weekday", month: 11, weekday: 4, nth: 4, offset: 1 },
+        { name: "Christmas Eve", kind: "fixed", month: 12, day: 24, observe: true },
+        { name: "Christmas Day", kind: "fixed", month: 12, day: 25, observe: true }
+      ];
+
+      var priceEl = document.getElementById("price");
+      var partsEl = document.getElementById("parts");
+      var hoursEl = document.getElementById("hours");
+      var helperHoursEl = document.getElementById("helperHours");
+      var techLaborOut = document.getElementById("techLaborOut");
+      var helperLaborOut = document.getElementById("helperLaborOut");
+      var jobResult = document.getElementById("job-result");
+      var revenueEl = document.getElementById("revenue");
+      var todayDateEl = document.getElementById("todayDate");
+      var daysLeftEl = document.getElementById("daysLeft");
+      var avgJobEl = document.getElementById("avgJob");
+      var customEl = document.getElementById("customTarget");
+      var customWrap = document.getElementById("custom-wrap");
+      var targetResult = document.getElementById("target-result");
+      var daysHint = document.getElementById("daysHint");
+      var oncallValueEl = document.getElementById("oncallValue");
+      var oncallMinus = document.getElementById("oncallMinus");
+      var oncallPlus = document.getElementById("oncallPlus");
+      var pills = document.querySelectorAll(".pill");
+      var selectedTarget = 45000;
+      var oncallWeekends = 0;
+
+      function parseMoney(raw) {
+        if (raw == null) return null;
+        var s = String(raw).trim();
+        if (s === "") return null;
+        var n = Number(s.replace(/[^0-9.-]/g, ""));
+        return isFinite(n) ? n : null;
+      }
+
+      function cents(n) {
+        return Math.round(n * 100) / 100;
+      }
+
+      function money(n) {
+        var sign = n < 0 ? "-" : "";
+        var abs = Math.abs(cents(n));
+        return sign + "$" + abs.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+
+      function pct(n) {
+        return (n * 100).toLocaleString("en-US", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + "%";
+      }
+
+      function jobs(n) {
+        return n.toLocaleString("en-US", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+      }
+
+      function pad2(n) {
+        return (n < 10 ? "0" : "") + n;
+      }
+
+      function dateKey(d) {
+        return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
+      }
+
+      function toDateInput(d) {
+        return dateKey(d);
+      }
+
+      function parseISODate(s) {
+        if (!s) return null;
+        var p = String(s).split("-");
+        if (p.length !== 3) return null;
+        var y = Number(p[0]);
+        var m = Number(p[1]);
+        var d = Number(p[2]);
+        if (!y || !m || !d) return null;
+        var dt = new Date(y, m - 1, d);
+        if (dt.getFullYear() !== y || dt.getMonth() !== m - 1 || dt.getDate() !== d) return null;
+        return dt;
+      }
+
+      function observeWeekend(d) {
+        var dow = d.getDay();
+        if (dow === 6) return new Date(d.getFullYear(), d.getMonth(), d.getDate() - 1);
+        if (dow === 0) return new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1);
+        return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      }
+
+      function nthWeekday(year, month, weekday, nth) {
+        var d = new Date(year, month - 1, 1);
+        var count = 0;
+        while (d.getMonth() === month - 1) {
+          if (d.getDay() === weekday) {
+            count += 1;
+            if (count === nth) return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+          }
+          d.setDate(d.getDate() + 1);
+        }
+        return null;
+      }
+
+      function firstWeekday(year, month, weekday) {
+        return nthWeekday(year, month, weekday, 1);
+      }
+
+      function lastWeekday(year, month, weekday) {
+        var d = new Date(year, month, 0);
+        while (d.getDay() !== weekday) d.setDate(d.getDate() - 1);
+        return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      }
+
+      function holidayDate(rule, year) {
+        var d = null;
+        if (rule.kind === "fixed") {
+          d = new Date(year, rule.month - 1, rule.day);
+          if (rule.observe) d = observeWeekend(d);
+        } else if (rule.kind === "first-weekday") {
+          d = firstWeekday(year, rule.month, rule.weekday);
+        } else if (rule.kind === "last-weekday") {
+          d = lastWeekday(year, rule.month, rule.weekday);
+        } else if (rule.kind === "nth-weekday") {
+          d = nthWeekday(year, rule.month, rule.weekday, rule.nth);
+        }
+        if (!d) return null;
+        if (rule.offset) d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + rule.offset);
+        return d;
+      }
+
+      function holidaysForYear(year) {
+        var set = {};
+        function add(d) {
+          if (d) set[dateKey(d)] = true;
+        }
+        COMPANY_HOLIDAYS.forEach(function (rule) {
+          add(holidayDate(rule, year));
+        });
+        // A weekend New Year's Day is observed on Friday, Dec 31 of the prior year.
+        COMPANY_HOLIDAYS.forEach(function (rule) {
+          if (rule.kind === "fixed" && rule.month === 1 && rule.day === 1 && rule.observe) {
+            var next = holidayDate(rule, year + 1);
+            if (next && next.getFullYear() === year) add(next);
+          }
+        });
+        return set;
+      }
+
+      function monthName(d) {
+        return d.toLocaleDateString("en-US", { month: "long" });
+      }
+
+      function businessDaysLeft(fromDate) {
+        var y = fromDate.getFullYear();
+        var m = fromDate.getMonth();
+        var start = fromDate.getDate();
+        var last = new Date(y, m + 1, 0).getDate();
+        var holidays = holidaysForYear(y);
+        var count = 0;
+        for (var day = start; day <= last; day++) {
+          var dt = new Date(y, m, day);
+          var dow = dt.getDay();
+          if (dow === 0 || dow === 6) continue;
+          if (holidays[dateKey(dt)]) continue;
+          count += 1;
+        }
+        return count;
+      }
+
+      function workingDaysLeft(fromDate, weekends) {
+        return businessDaysLeft(fromDate) + (Number(weekends) || 0) * 2;
+      }
+
+      function currentDate() {
+        return parseISODate(todayDateEl.value) || new Date();
+      }
+
+      function escapeHtml(s) {
+        return String(s).replace(/[&<>"']/g, function (c) {
+          return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c];
+        });
+      }
+
+      function techLaborFromHours(hours) {
+        return cents((hours || 0) * TECH_RATE);
+      }
+
+      function helperLaborFromHours(hours) {
+        return cents((hours || 0) * HELPER_RATE);
+      }
+
+      function scoreJob(price, parts, techHours, helperHours) {
+        var techLabor = techLaborFromHours(techHours);
+        var helperLabor = helperLaborFromHours(helperHours);
+        var labor = cents(techLabor + helperLabor);
+        var cost = cents(parts + labor);
+        var gmDollars = cents(price - cost);
+        var gmPct = price > 0 ? gmDollars / price : null;
+        var price60 = cost > 0 ? cents(cost / (1 - GOOD)) : 0;
+        var price70 = cost > 0 ? cents(cost / (1 - GREAT)) : 0;
+        var price80 = cost > 0 ? cents(cost / (1 - EXCELLENT)) : 0;
+        var rating = "below";
+        var ratingLabel = "Below target";
+        if (gmPct != null && gmPct >= EXCELLENT) {
+          rating = "excellent";
+          ratingLabel = "Excellent";
+        } else if (gmPct != null && gmPct >= GREAT) {
+          rating = "great";
+          ratingLabel = "Great";
+        } else if (gmPct != null && gmPct >= GOOD) {
+          rating = "good";
+          ratingLabel = "Good";
+        }
+        return {
+          price: price,
+          parts: parts,
+          techHours: techHours,
+          helperHours: helperHours,
+          techLabor: techLabor,
+          helperLabor: helperLabor,
+          labor: labor,
+          cost: cost,
+          gmDollars: gmDollars,
+          gmPct: gmPct,
+          price60: price60,
+          price70: price70,
+          price80: price80,
+          rating: rating,
+          ratingLabel: ratingLabel
+        };
+      }
+
+      function scoreTarget(target, revenue, daysLeft, avgJob) {
+        var needed = Math.max(0, target - revenue);
+        var over = Math.max(0, revenue - target);
+        var hit = revenue >= target && target > 0;
+        var perDay = daysLeft > 0 ? needed / daysLeft : null;
+        var jobsTotal = avgJob > 0 ? needed / avgJob : null;
+        var jobsPerDay = perDay != null && avgJob > 0 ? perDay / avgJob : null;
+        var progress = target > 0 ? Math.min(1, Math.max(0, revenue / target)) : 0;
+        return {
+          target: target,
+          revenue: revenue,
+          daysLeft: daysLeft,
+          avgJob: avgJob,
+          needed: needed,
+          over: over,
+          hit: hit,
+          perDay: perDay,
+          jobsTotal: jobsTotal,
+          jobsPerDay: jobsPerDay,
+          progress: progress
+        };
+      }
+
+      function updateLaborLabels() {
+        var techHours = parseMoney(hoursEl.value);
+        var helperHours = parseMoney(helperHoursEl.value);
+        if (techHours == null) techHours = 0;
+        if (helperHours == null) helperHours = 0;
+        techLaborOut.textContent = "Labor: " + money(techLaborFromHours(techHours));
+        helperLaborOut.textContent = "Helper labor: " + money(helperLaborFromHours(helperHours));
+      }
+
+      function renderJob() {
+        updateLaborLabels();
+        var price = parseMoney(priceEl.value);
+        var parts = parseMoney(partsEl.value);
+        var techHours = parseMoney(hoursEl.value);
+        var helperHours = parseMoney(helperHoursEl.value);
+        if (price == null || price === 0) {
+          jobResult.className = "result empty";
+          jobResult.textContent = "Enter a job price to see gross margin.";
+          return;
+        }
+        if (parts == null) parts = 0;
+        if (techHours == null) techHours = 0;
+        if (helperHours == null) helperHours = 0;
+        var r = scoreJob(price, parts, techHours, helperHours);
+        var gmClass = r.gmDollars < 0 ? "neg" : "";
+        var costNote = "";
+        if (r.cost === 0) {
+          costNote = "No parts or labor cost, so any positive price is above this target.";
+        }
+        jobResult.className = "result " + r.rating;
+        jobResult.innerHTML =
+          '<div class="rating">' + escapeHtml(r.ratingLabel) + "</div>" +
+          '<div class="gm-pct">' + escapeHtml(pct(r.gmPct)) + "</div>" +
+          '<p class="gm-dollars">Gross margin ' + escapeHtml(money(r.gmDollars)) + "</p>" +
+          '<p class="formula">GM% = (price - parts - labor) / price</p>' +
+          '<div class="metrics">' +
+            '<div class="metric"><div class="k">Price needed for 60%<span>' + escapeHtml(costNote || "Given this parts and labor cost") + '</span></div><div class="v">' + escapeHtml(money(r.price60)) + "</div></div>" +
+            '<div class="metric"><div class="k">Price needed for 70%<span>' + escapeHtml(costNote || "Given this parts and labor cost") + '</span></div><div class="v">' + escapeHtml(money(r.price70)) + "</div></div>" +
+            '<div class="metric"><div class="k">Price needed for 80%<span>' + escapeHtml(costNote || "Given this parts and labor cost") + '</span></div><div class="v">' + escapeHtml(money(r.price80)) + "</div></div>" +
+          "</div>" +
+          '<div class="breakdown">' +
+            "<h3>Where this job goes</h3>" +
+            '<div class="row"><span>Parts</span><strong>' + escapeHtml(money(r.parts)) + "</strong></div>" +
+            '<div class="row"><span>Tech labor</span><strong>' + escapeHtml(money(r.techLabor)) + "</strong></div>" +
+            '<div class="row"><span>Helper labor</span><strong>' + escapeHtml(money(r.helperLabor)) + "</strong></div>" +
+            '<div class="row"><span>Gross margin</span><strong class="' + gmClass + '">' + escapeHtml(money(r.gmDollars)) + "</strong></div>" +
+            '<div class="row total"><span>Job price</span><strong>' + escapeHtml(money(r.price)) + "</strong></div>" +
+          "</div>";
+      }
+
+      function currentTarget() {
+        if (selectedTarget === "custom") {
+          var custom = parseMoney(customEl.value);
+          return custom == null ? 0 : custom;
+        }
+        return selectedTarget;
+      }
+
+      function renderTarget() {
+        var target = currentTarget();
+        var revenue = parseMoney(revenueEl.value);
+        if (revenue == null) revenue = 0;
+        var daysLeft = parseMoney(daysLeftEl.value);
+        var avgJob = parseMoney(avgJobEl.value);
+        if (avgJob == null) avgJob = 850;
+        if (daysLeft == null) daysLeft = 0;
+        if (target <= 0) {
+          targetResult.innerHTML = '<p class="note">Choose a target, or enter a custom amount, to see what you need per day.</p>';
+          return;
+        }
+        var r = scoreTarget(target, revenue, daysLeft, avgJob);
+        var barWidth = Math.round(r.progress * 1000) / 10;
+        var hitClass = r.hit ? " hit" : "";
+        var status;
+        if (r.hit) {
+          status = "Target reached. You are " + money(r.over) + " over the line.";
+        } else {
+          status = money(r.needed) + " still needed to hit " + money(r.target) + ".";
+        }
+        var perDayText = "Add days left";
+        var perDayLabel = "Needed per remaining day";
+        if (r.hit) {
+          perDayText = money(0);
+          perDayLabel = "Needed per remaining day";
+        } else if (r.perDay == null) {
+          perDayText = "Enter days left";
+        } else {
+          perDayText = money(r.perDay);
+        }
+        var jobsDayText = r.jobsPerDay == null ? (avgJob > 0 ? "Enter days left" : "Enter average job") : jobs(r.jobsPerDay);
+        var jobsTotalText = r.jobsTotal == null ? "Enter average job" : jobs(r.jobsTotal);
+        var jobsNote = "";
+        if (r.jobsTotal != null && r.jobsTotal > 0) {
+          var rounded = Math.ceil(r.jobsTotal - 1e-9);
+          jobsNote = "<p class=\"note\">At a " + escapeHtml(money(avgJob)) + " average job, that is about " + escapeHtml(String(rounded)) + " job" + (rounded === 1 ? "" : "s") + " remaining.</p>";
+        }
+        var daysNote = "";
+        if (!r.hit && daysLeft <= 0) {
+          daysNote = "<p class=\"note\">Enter the working days you still have so we can split the remaining revenue by day.</p>";
+        }
+        targetResult.innerHTML =
+          '<div class="progress">' +
+            '<div class="progress-top"><span>' + escapeHtml(money(r.revenue)) + " of " + escapeHtml(money(r.target)) + '</span><span>' + escapeHtml(barWidth.toFixed(1)) + "%</span></div>" +
+            '<div class="bar' + hitClass + '"><span style="width:' + barWidth + '%"></span></div>' +
+            '<p class="note">' + escapeHtml(status) + "</p>" +
+          "</div>" +
+          '<div class="target-stats">' +
+            '<div class="stat wide"><div class="v">' + escapeHtml(perDayText) + '</div><div class="k">' + escapeHtml(perDayLabel) + "</div></div>" +
+            '<div class="stat"><div class="v">' + escapeHtml(jobsDayText) + '</div><div class="k">Jobs needed per day</div></div>' +
+            '<div class="stat"><div class="v">' + escapeHtml(jobsTotalText) + '</div><div class="k">Jobs needed in total</div></div>' +
+          "</div>" +
+          jobsNote + daysNote;
+      }
+
+      function updateDaysFromDate() {
+        var d = currentDate();
+        var biz = businessDaysLeft(d);
+        var total = workingDaysLeft(d, oncallWeekends);
+        daysLeftEl.value = String(total);
+        var hint = biz + " business day" + (biz === 1 ? "" : "s") + " left in " + monthName(d) + ", not counting company holidays.";
+        if (oncallWeekends > 0) {
+          var added = oncallWeekends * 2;
+          hint += " " + oncallWeekends + " on-call weekend" + (oncallWeekends === 1 ? "" : "s") + " add" + (oncallWeekends === 1 ? "s" : "") + " " + added + " day" + (added === 1 ? "" : "s") + ", for " + total + " working days.";
+        }
+        daysHint.textContent = hint;
+        oncallValueEl.textContent = String(oncallWeekends);
+        oncallMinus.disabled = oncallWeekends <= 0;
+        oncallPlus.disabled = oncallWeekends >= 2;
+        renderTarget();
+      }
+
+      function setTarget(value) {
+        selectedTarget = value;
+        pills.forEach(function (btn) {
+          var pressed = String(btn.getAttribute("data-target")) === String(value);
+          btn.setAttribute("aria-pressed", pressed ? "true" : "false");
+        });
+        customWrap.classList.toggle("hidden", value !== "custom");
+        renderTarget();
+      }
+
+      function setOncall(n) {
+        oncallWeekends = Math.max(0, Math.min(2, n));
+        updateDaysFromDate();
+      }
+
+      pills.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var v = btn.getAttribute("data-target");
+          setTarget(v === "custom" ? "custom" : Number(v));
+          if (v === "custom") customEl.focus();
+        });
+      });
+
+      [priceEl, partsEl, hoursEl, helperHoursEl].forEach(function (el) {
+        el.addEventListener("input", renderJob);
+      });
+
+      [revenueEl, daysLeftEl, avgJobEl, customEl].forEach(function (el) {
+        el.addEventListener("input", renderTarget);
+      });
+
+      todayDateEl.addEventListener("input", updateDaysFromDate);
+      todayDateEl.addEventListener("change", updateDaysFromDate);
+      oncallMinus.addEventListener("click", function () { setOncall(oncallWeekends - 1); });
+      oncallPlus.addEventListener("click", function () { setOncall(oncallWeekends + 1); });
+
+      document.querySelectorAll("input").forEach(function (el) {
+        el.addEventListener("keydown", function (e) {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            el.blur();
+          }
+        });
+      });
+
+      var today = new Date();
+      todayDateEl.value = toDateInput(today);
+
+      // Expose for headless tests only; no data is stored.
+      window.TomCalc = {
+        parseMoney: parseMoney,
+        scoreJob: scoreJob,
+        scoreTarget: scoreTarget,
+        businessDaysLeft: businessDaysLeft,
+        workingDaysLeft: workingDaysLeft,
+        holidaysForYear: holidaysForYear,
+        holidayDate: holidayDate,
+        TECH_RATE: TECH_RATE,
+        HELPER_RATE: HELPER_RATE,
+        COMPANY_HOLIDAYS: COMPANY_HOLIDAYS,
+        setOncall: setOncall,
+        updateDaysFromDate: updateDaysFromDate
+      };
+
+      renderJob();
+      updateDaysFromDate();
+    })();
+  </script>
+</body>
+</html>
