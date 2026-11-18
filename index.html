@@ -358,6 +358,50 @@
       opacity: 0.8;
     }
 
+
+    .incentive {
+      margin-top: 12px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px 12px 12px;
+      color: var(--ink);
+      text-align: center;
+    }
+
+    .incentive-label {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .incentive-amt {
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--navy);
+      line-height: 1.1;
+      margin: 6px 0 4px;
+    }
+
+    .incentive-math {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 650;
+      color: var(--navy);
+    }
+
+    .incentive-note {
+      margin: 10px 0 0;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      text-align: left;
+      line-height: 1.45;
+    }
+
     .metrics {
       display: grid;
       gap: 8px;
@@ -906,6 +950,11 @@
           rating = "good";
           ratingLabel = "Good";
         }
+        var incentiveRate = 0;
+        if (gmPct != null && gmPct >= EXCELLENT) incentiveRate = 0.07;
+        else if (gmPct != null && gmPct >= GREAT) incentiveRate = 0.05;
+        else if (gmPct != null && gmPct >= GOOD) incentiveRate = 0.03;
+        var incentive = (incentiveRate > 0 && gmDollars > 0) ? cents(gmDollars * incentiveRate) : 0;
         return {
           price: price,
           parts: parts,
@@ -921,7 +970,9 @@
           price70: price70,
           price80: price80,
           rating: rating,
-          ratingLabel: ratingLabel
+          ratingLabel: ratingLabel,
+          incentiveRate: incentiveRate,
+          incentive: incentive
         };
       }
 
@@ -1006,12 +1057,24 @@
         if (r.cost === 0) {
           costNote = "No parts or labor cost, so any positive price is above this target.";
         }
+        var incentiveMath;
+        if (r.incentiveRate > 0) {
+          incentiveMath = Math.round(r.incentiveRate * 100) + "% of " + money(r.gmDollars) + " gross profit = " + money(r.incentive);
+        } else {
+          incentiveMath = "Below 60% gross margin, your incentive is " + money(0);
+        }
         jobResult.className = "result " + r.rating;
         jobResult.innerHTML =
           '<div class="rating">' + escapeHtml(r.ratingLabel) + "</div>" +
           '<div class="gm-pct">' + escapeHtml(pct(r.gmPct)) + "</div>" +
-          '<p class="gm-dollars">Gross margin ' + escapeHtml(money(r.gmDollars)) + "</p>" +
-          '<p class="formula">GM% = (price - parts - labor) / price</p>' +
+          '<p class="gm-dollars">Gross profit ' + escapeHtml(money(r.gmDollars)) + "</p>" +
+          '<p class="formula">Gross margin = gross profit / revenue</p>' +
+          '<div class="incentive">' +
+            '<div class="incentive-label">Your incentive on this job</div>' +
+            '<div class="incentive-amt">' + escapeHtml(money(r.incentive)) + "</div>" +
+            '<p class="incentive-math">' + escapeHtml(incentiveMath) + "</p>" +
+            '<p class="incentive-note">Estimate only. Paid weekly on closed, fully costed jobs; split jobs share the incentive; weeks under $8,000 revenue are held and paid at month end if the month reaches $45,000.</p>' +
+          "</div>" +
           '<div class="metrics">' +
             '<div class="metric"><div class="k">Price needed for 60%<span>' + escapeHtml(costNote || "Given this parts and labor cost") + '</span></div><div class="v">' + escapeHtml(money(r.price60)) + "</div></div>" +
             '<div class="metric"><div class="k">Price needed for 70%<span>' + escapeHtml(costNote || "Given this parts and labor cost") + '</span></div><div class="v">' + escapeHtml(money(r.price70)) + "</div></div>" +
@@ -1022,7 +1085,7 @@
             '<div class="row"><span>Parts</span><strong>' + escapeHtml(money(r.parts)) + "</strong></div>" +
             '<div class="row"><span>Tech labor</span><strong>' + escapeHtml(money(r.techLabor)) + "</strong></div>" +
             '<div class="row"><span>Helper labor</span><strong>' + escapeHtml(money(r.helperLabor)) + "</strong></div>" +
-            '<div class="row"><span>Gross margin</span><strong class="' + gmClass + '">' + escapeHtml(money(r.gmDollars)) + "</strong></div>" +
+            '<div class="row"><span>Gross profit</span><strong class="' + gmClass + '">' + escapeHtml(money(r.gmDollars)) + "</strong></div>" +
             '<div class="row total"><span>Job price</span><strong>' + escapeHtml(money(r.price)) + "</strong></div>" +
           "</div>";
       }
