@@ -177,6 +177,25 @@
       pointer-events: none;
     }
 
+
+    .suffix {
+      position: absolute;
+      right: 14px;
+      color: var(--muted);
+      font-weight: 700;
+      pointer-events: none;
+    }
+
+    input.with-suffix {
+      padding-left: 14px;
+      padding-right: 36px;
+    }
+
+
+    .ticket-intro {
+      margin: 0 0 14px;
+    }
+
     input[type="text"], input[type="number"], input[type="date"] {
       width: 100%;
       height: var(--tap);
@@ -437,6 +456,9 @@
       line-height: 1.15;
     }
 
+    .stat .v.pos { color: var(--great); }
+    .stat .v.neg { color: var(--below); }
+
     .stat .k {
       margin-top: 4px;
       font-size: 12.5px;
@@ -625,6 +647,29 @@
 
       <div id="target-result" aria-live="polite"></div>
     </section>
+
+    <section class="card" aria-labelledby="ticket-title">
+      <h2 id="ticket-title">Average Ticket Goal</h2>
+      <p class="note ticket-intro">Enter your current average ticket and a target increase to see your new goal and how much more each job is worth.</p>
+
+      <div class="field">
+        <label for="currentTicket">Current average ticket</label>
+        <div class="input-wrap">
+          <span class="prefix">$</span>
+          <input id="currentTicket" name="currentTicket" type="text" inputmode="decimal" enterkeyhint="done" autocomplete="off" autocorrect="off" spellcheck="false" value="850">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="ticketIncrease">Target increase</label>
+        <div class="input-wrap">
+          <input id="ticketIncrease" class="plain with-suffix" name="ticketIncrease" type="text" inputmode="decimal" enterkeyhint="done" autocomplete="off" autocorrect="off" spellcheck="false" value="10">
+          <span class="suffix">%</span>
+        </div>
+      </div>
+
+      <div id="ticket-result" aria-live="polite"></div>
+    </section>
   </main>
 
   <footer>
@@ -674,6 +719,9 @@
       var oncallMinus = document.getElementById("oncallMinus");
       var oncallPlus = document.getElementById("oncallPlus");
       var pills = document.querySelectorAll(".pill");
+      var currentTicketEl = document.getElementById("currentTicket");
+      var ticketIncreaseEl = document.getElementById("ticketIncrease");
+      var ticketResult = document.getElementById("ticket-result");
       var selectedTarget = 45000;
       var oncallWeekends = 0;
 
@@ -900,6 +948,35 @@
         };
       }
 
+      function scoreTicketGoal(current, increasePct) {
+        if (current == null || increasePct == null) return null;
+        var target = cents(current * (1 + increasePct / 100));
+        var increase = cents(target - current);
+        return {
+          current: current,
+          increasePct: increasePct,
+          target: target,
+          increase: increase
+        };
+      }
+
+      function renderTicketGoal() {
+        var current = parseMoney(currentTicketEl.value);
+        var increasePct = parseMoney(ticketIncreaseEl.value);
+        if (current == null || increasePct == null) {
+          ticketResult.innerHTML = '<p class="note">Enter your current average ticket and a target increase.</p>';
+          return;
+        }
+        var r = scoreTicketGoal(current, increasePct);
+        var incClass = r.increase < 0 ? "neg" : (r.increase > 0 ? "pos" : "");
+        var incText = (r.increase > 0 ? "+" : "") + money(r.increase);
+        ticketResult.innerHTML =
+          '<div class="target-stats">' +
+            '<div class="stat wide"><div class="v">' + escapeHtml(money(r.target)) + '</div><div class="k">New target average ticket</div></div>' +
+            '<div class="stat wide"><div class="v' + (incClass ? " " + incClass : "") + '">' + escapeHtml(incText) + '</div><div class="k">Increase per job</div></div>' +
+          "</div>";
+      }
+
       function updateLaborLabels() {
         var techHours = parseMoney(hoursEl.value);
         var helperHours = parseMoney(helperHoursEl.value);
@@ -1062,6 +1139,10 @@
         el.addEventListener("input", renderTarget);
       });
 
+      [currentTicketEl, ticketIncreaseEl].forEach(function (el) {
+        el.addEventListener("input", renderTicketGoal);
+      });
+
       todayDateEl.addEventListener("input", updateDaysFromDate);
       todayDateEl.addEventListener("change", updateDaysFromDate);
       oncallMinus.addEventListener("click", function () { setOncall(oncallWeekends - 1); });
@@ -1092,11 +1173,13 @@
         HELPER_RATE: HELPER_RATE,
         COMPANY_HOLIDAYS: COMPANY_HOLIDAYS,
         setOncall: setOncall,
-        updateDaysFromDate: updateDaysFromDate
+        updateDaysFromDate: updateDaysFromDate,
+        scoreTicketGoal: scoreTicketGoal
       };
 
       renderJob();
       updateDaysFromDate();
+      renderTicketGoal();
     })();
   </script>
 </body>
